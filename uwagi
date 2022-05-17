@@ -1,0 +1,11 @@
+- wyliczanie pensji na podstawie rodzaju umowy oraz + premia dla managerow. Nie mamy tego w specyfikacji- jak to rozwiazac
+- wyjasnic klasy pracownikTymaczsowy oraz etatowy i ich implementacje (ok wiem jak to zrobic, potrzebne nazwy tej asocjacji/dziedziczenia abym mogl doczytac)
+ dziedziczenie wieloaspektowe.
+
+- ranking pracownikow obslugi. brak sprecyzowanych informacji o tym kto ma byc w rankingu ("Pracownik odpowiedzialny za obsługe klientów posiada ranking pracowników") wszystkich? jakie kryteria?
+     zrobic po premii
+- premia za ostatni miesiac. Sugerowalbym nie podawac premii w konstruktorze poniewaz nie jest to wartosc stala i moze wyniesc 0. w momencia przyznania premii uzyc setter.
+- gettery i settery. W dalszym ciagu mam wiele z nich nieuzywanych.
+- klient moze rezerwowac i kupowac wycieczki. rozdzielamy to?
+jest ok
+- asocjacja Klient zarejestrowany i pracownik obslugi klienta. Jest jeden do wielu nie powinno byc wiele do wiele?

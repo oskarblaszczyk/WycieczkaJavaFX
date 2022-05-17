@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.Pane?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kurs.wycieczkajavafx.controllers.KlienciController">
+   <children>
+      <Label layoutX="189.0" layoutY="76.0" text="Klienci" />
+      <Button layoutX="51.0" layoutY="80.0" mnemonicParsing="false" onAction="#backMenu" text="Menu" />
+      <ListView fx:id="listKlienci" layoutX="57.0" layoutY="200.0" prefHeight="365.0" prefWidth="573.0" />
+   </children>
+</Pane>
