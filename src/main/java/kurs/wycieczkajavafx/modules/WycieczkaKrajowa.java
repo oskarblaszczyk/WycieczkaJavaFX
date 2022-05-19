@@ -13,4 +13,7 @@ public class WycieczkaKrajowa extends Wycieczka {
 	public String getMiasto() {
 		return miasto;
 	}
+
+
+
 }

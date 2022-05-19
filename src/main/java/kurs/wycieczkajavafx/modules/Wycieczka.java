@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class Wycieczka extends Ekstensja {
 	private int id;
@@ -85,5 +86,18 @@ public abstract class Wycieczka extends Ekstensja {
 	public String toString() {
 		return "Wycieczka{" + "id=" + id + ", cena=" + cena + ", motyw='" + motyw + '\'' + ", ocena=" + ocena
 				+ ", przewodnik=" + przewodnik + '}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Wycieczka wycieczka = (Wycieczka) o;
+		return id == wycieczka.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

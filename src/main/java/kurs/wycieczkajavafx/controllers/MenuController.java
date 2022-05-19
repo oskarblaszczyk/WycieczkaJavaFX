@@ -13,6 +13,16 @@ public class MenuController {
 
     @FXML
     public void openWycieczki(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/kurs/fxml/WycieczkiScreen.fxml"));
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        WycieczkiController wycieczkiController = loader.getController();
+        wycieczkiController.setMainController(mainController);
+        mainController.setScreen(pane);
     }
 
     @FXML
