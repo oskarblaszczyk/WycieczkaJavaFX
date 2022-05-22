@@ -11,20 +11,22 @@ import kurs.wycieczkajavafx.modules.KlientZarejestrowany;
 import kurs.wycieczkajavafx.modules.Wycieczka;
 
 import java.io.*;
-import java.util.Arrays;
 
 public class KlienciController {
 
 
+
     private MainController mainController;
+    private KlientZarejestrowany naznaczony = null;
+
 
     @FXML
-    ListView<KlientZarejestrowany> listKlienci = new ListView<>();
-    ObservableList<KlientZarejestrowany> items = FXCollections.observableArrayList();
+    public ListView<KlientZarejestrowany> listKlienci = new ListView<>();
+    public ObservableList<KlientZarejestrowany> items = FXCollections.observableArrayList();
 
     @FXML
     public ListView<Wycieczka> wycieczkiKlienta = new ListView<>();
-    ObservableList<Wycieczka> itemsW = FXCollections.observableArrayList();
+    public ObservableList<Wycieczka> itemsW = FXCollections.observableArrayList();
 
     @FXML
     public TextField dodajImie;
@@ -51,11 +53,24 @@ public class KlienciController {
     public TextArea edytujMail;
 
     @FXML
+    public TextField najwiecejWydal;
+
+    @FXML
     public void dodajKlienta(ActionEvent actionEvent) throws IOException {
         KlientZarejestrowany nowy = new KlientZarejestrowany(dodajImie.getText(), dodajNazwisko.getText(), dodajTelefon.getText());
-        String[] maile = dodajMail.getText().split("\\n");
-        nowy.getEmail().addAll(Arrays.stream(maile).toList());
+        String[] maile = dodajMail.getText().split("\n");
+        for (String s : maile) {
+            nowy.getEmail().add(s);
+        }
+        System.out.println(nowy.getEmail());
+
         items.add(nowy);
+        listKlienci.refresh();
+        dodajImie.clear();
+        dodajNazwisko.clear();
+        dodajTelefon.clear();
+        dodajMail.clear();
+
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
         Ekstensja.save(oos);
         oos.close();
@@ -72,9 +87,8 @@ public class KlienciController {
 
     @FXML
     public void deleteKlient(ActionEvent actionEvent) throws IOException {
-        MultipleSelectionModel<KlientZarejestrowany> klienci = listKlienci.getSelectionModel();
-        items.removeAll(klienci.getSelectedItems());
-        Ekstensja.getEkstensja(KlientZarejestrowany.class).removeAll(klienci.getSelectedItems());
+        Ekstensja.getEkstensja(KlientZarejestrowany.class).remove(naznaczony);
+        items.remove(naznaczony);
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
         Ekstensja.save(oos);
         oos.close();
@@ -87,12 +101,23 @@ public class KlienciController {
         } catch (Exception e) {
             System.out.println("Brak ekstensji");
         }
-        if (Ekstensja.getEkstensja(KlientZarejestrowany.class) == null){
+        if (Ekstensja.getEkstensja(KlientZarejestrowany.class) == null) {
 
-        }else{
+        } else {
             items.addAll(Ekstensja.getEkstensja(KlientZarejestrowany.class));
             listKlienci.setItems(items);
         }
+
+        KlientZarejestrowany najwiece = listKlienci.getItems().get(0);
+        for(KlientZarejestrowany k : listKlienci.getItems()){
+            if(sumaKosztow(najwiece) < sumaKosztow(k)){
+                najwiece = k;
+            }
+        }
+
+        najwiecejWydal.setText(najwiece.toString());
+
+
     }
 
     public void setMainController(MainController mainController) {
@@ -100,17 +125,45 @@ public class KlienciController {
     }
 
 
-    public void zapiszEdycje(ActionEvent actionEvent) {
+    public void zapiszEdycje(ActionEvent actionEvent) throws IOException {
+        naznaczony.setImie(edytujImie.getText());
+        naznaczony.setNazwisko(edytujNazwisko.getText());
+        naznaczony.setNumerTelefonu(edytujTelefon.getText());
+        String[] maile = edytujMail.getText().split("\n");
+        naznaczony.getEmail().clear();
+        for (String s : maile) {
+            naznaczony.getEmail().add(s);
+        }
+
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
+        Ekstensja.save(oos);
+        oos.close();
     }
 
-    public void selectedKlient(MouseEvent mouseEvent) {
-        MultipleSelectionModel<KlientZarejestrowany> wycieczki = listKlienci.getSelectionModel();
+    public void zaznaczonyKlient(MouseEvent mouseEvent) {
+        MultipleSelectionModel<KlientZarejestrowany> selected = listKlienci.getSelectionModel();
+        naznaczony = selected.getSelectedItem();
+        klientID.setText(String.valueOf(naznaczony.getId()));
+        edytujImie.setText(naznaczony.getImie());
+        edytujNazwisko.setText(naznaczony.getNazwisko());
+        edytujTelefon.setText(naznaczony.getNumerTelefonu());
+        StringBuilder sb = new StringBuilder();
+        for (String s : naznaczony.getEmail()) {
+            sb.append(s + "\n");
+        }
+        edytujMail.setText(sb.toString());
 
-        try {
-            itemsW.addAll(wycieczki.getSelectedItem().getWycieczki());
-            wycieczkiKlienta.setItems(itemsW);
-        }catch (NullPointerException e){
-            System.out.println("brak wycieczek do wyswietlenia");
-        }
-        }
+        itemsW.clear();
+        itemsW.addAll(naznaczony.getWycieczki());
+        wycieczkiKlienta.setItems(itemsW);
+
     }
+
+    private double sumaKosztow(KlientZarejestrowany klient) {
+        double result = 0;
+        for (Wycieczka w : klient.getWycieczki()){
+            result += w.getCena();
+        }
+        return result;
+    }
+}

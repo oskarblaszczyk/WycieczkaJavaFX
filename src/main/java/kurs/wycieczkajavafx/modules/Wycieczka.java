@@ -100,4 +100,6 @@ public abstract class Wycieczka extends Ekstensja {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+
 }
