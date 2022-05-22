@@ -4,84 +4,34 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import kurs.wycieczkajavafx.modules.Ekstensja;
-import kurs.wycieczkajavafx.modules.Wycieczka;
-import kurs.wycieczkajavafx.modules.WycieczkaKrajowa;
-import kurs.wycieczkajavafx.modules.WycieczkaZagraniczna;
+import kurs.wycieczkajavafx.modules.*;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class WycieczkiController {
 
+    public TextField dodajKrajMiasto;
+    public TextField dodajCena;
+    public ComboBox dodajMotyw;
+    public Slider dodajOcene;
+    public ComboBox rodzajWycieczki;
+    public Label krajMiasto;
     private MainController mainController;
-
-    @FXML
-    ListView<Wycieczka> listWycieczki = new ListView<>();
-    ObservableList<Wycieczka> items = FXCollections.observableArrayList();
-
-    @FXML
-    public ListView<Wycieczka> wycieczkiKlienta = new ListView<>();
-    ObservableList<Wycieczka> itemsW = FXCollections.observableArrayList();
-
-    @FXML
-    public TextField dodajImie;
-
-    @FXML
-    public TextField dodajNazwisko;
-
-    @FXML
-    public TextField dodajTelefon;
-
-    @FXML
-    public TextArea dodajMail;
-
-    @FXML
-    public TextField edytujImie;
-
-    @FXML
-    public TextField edytujNazwisko;
-
-    @FXML
-    public TextField edytujTelefon;
-
-    @FXML
-    public TextArea edytujMail;
-
-    @FXML
-    public void dodajKlienta(ActionEvent actionEvent) throws IOException {
-        // Wycieczka nowy = new WycieczkaKrajowa();
-        //String[] maile = dodajMail.getText().split("\\n");
-        // nowy.getEmail().addAll(Arrays.stream(maile).toList());
-        // items.add(nowy);
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
-        Ekstensja.save(oos);
-        oos.close();
-    }
-
-    @FXML
-    public TextField klientID;
+    private WycieczkaKrajowa krajowa = null;
+    private WycieczkaZagraniczna zagraniczna = null;
+    private Wycieczka zaznaczona = null;
 
 
     @FXML
-    public void backMenu(ActionEvent actionEvent) {
-        mainController.initialize();
-    }
+    public ListView<Wycieczka> listWycieczki = new ListView<>();
+    public ObservableList<Wycieczka> items = FXCollections.observableArrayList();
 
     @FXML
-    public void deleteKlient(ActionEvent actionEvent) throws IOException {
-        MultipleSelectionModel<Wycieczka> wycieczki = listWycieczki.getSelectionModel();
-        items.removeAll(wycieczki.getSelectedItems());
-        Ekstensja.getEkstensja(WycieczkaKrajowa.class).removeAll(wycieczki.getSelectedItems());
-        //Ekstensja.getEkstensja(WycieczkaZagraniczna.class).removeAll(wycieczki.getSelectedItems());
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
-        Ekstensja.save(oos);
-        oos.close();
-    }
+    public ListView<KlientZarejestrowany> klienciWycieczek = new ListView<>();
+    public ObservableList<KlientZarejestrowany> itemsW = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -90,32 +40,79 @@ public class WycieczkiController {
         } catch (Exception e) {
             System.out.println("Brak ekstensji");
         }
-        if (Ekstensja.getEkstensja(WycieczkaKrajowa.class) == null) {
-            System.out.println("null");
-        } else {
-            System.out.println("test");
-            System.out.println(Ekstensja.getEkstensja(Wycieczka.class));
+        try {
             items.addAll(Ekstensja.getEkstensja(WycieczkaKrajowa.class));
-            listWycieczki.setItems(items);
+            items.addAll(Ekstensja.getEkstensja(WycieczkaZagraniczna.class));
+        } catch (NullPointerException e) {
+            // e.printStackTrace();
         }
+        listWycieczki.setItems(items);
+
+        ObservableList<MotywWycieczki> motywy = FXCollections.observableArrayList(MotywWycieczki.values());
+        dodajMotyw.setItems(motywy);
+        ObservableList<String> rodzaje = FXCollections.observableArrayList(  Arrays.asList("Krajowa", "Zagraniczna"));
+        rodzajWycieczki.setItems(rodzaje);
+
+    }
+
+    public void backMenu(ActionEvent actionEvent) {
+        mainController.initialize();
+    }
+
+    public void zaznaczonaWycieczka(MouseEvent mouseEvent) {
+        MultipleSelectionModel<Wycieczka> selected = listWycieczki.getSelectionModel();
+        zaznaczona = selected.getSelectedItem();
+
+
+//        krajowa = selected.getSelectedItem();
+//        zagraniczna = selected.getSelectedItem();
+
+
+//        klientID.setText(String.valueOf(naznaczony.getId()));
+//        edytujImie.setText(naznaczony.getImie());
+//        edytujNazwisko.setText(naznaczony.getNazwisko());
+//        edytujTelefon.setText(naznaczony.getNumerTelefonu());
+//        StringBuilder sb = new StringBuilder();
+//        for (String s : naznaczony.getEmail()) {
+//            sb.append(s + "\n");
+//        }
+//        edytujMail.setText(sb.toString());
+//
+        itemsW.clear();
+        try {
+            itemsW.addAll(krajowa.getKlienci());
+            itemsW.addAll(zagraniczna.getKlienci());
+            klienciWycieczek.setItems(itemsW);
+        } catch (NullPointerException e) {
+
+        }
+    }
+
+    public void usunWycieczke(ActionEvent actionEvent) throws IOException {
+        try {
+            Ekstensja.getEkstensja(WycieczkaKrajowa.class).remove(zaznaczona);
+            Ekstensja.getEkstensja(WycieczkaZagraniczna.class).remove(zaznaczona);
+        } catch (NullPointerException e) {
+            //todo
+        }
+        items.remove(zaznaczona);
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
+        Ekstensja.save(oos);
+        oos.close();
+    }
+
+    public void dodajWycieczke(ActionEvent actionEvent) {
+
+    }
+
+    public void zapiszEdycje(ActionEvent actionEvent) {
     }
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-
-    public void zapiszEdycje(ActionEvent actionEvent) {
-    }
-
-    public void selectedKlient(MouseEvent mouseEvent) {
-//        MultipleSelectionModel<Wycieczka> wycieczki = listKlienci.getSelectionModel();
-//
-//        try {
-//            itemsW.addAll(wycieczki.getSelectedItem().getWycieczki());
-//            wycieczkiKlienta.setItems(itemsW);
-//        }catch (NullPointerException e){
-//            System.out.println("brak wycieczek do wyswietlenia");
-//        }
+    public void rodzajWycieczki(ActionEvent actionEvent) {
+        krajMiasto.setText(rodzajWycieczki.getValue().toString());
     }
 }

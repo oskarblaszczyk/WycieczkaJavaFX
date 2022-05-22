@@ -5,14 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import kurs.wycieczkajavafx.modules.*;
 
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public class Main extends Application {
 	public static void main(String[] args) throws IOException {
@@ -21,7 +16,7 @@ public class Main extends Application {
 
 
 
-		// wczytanie ekstensji
+//		 wczytanie ekstensji
 //		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("BazaDanych"))) {
 //			Ekstensja.load(ois);
 //		} catch (Exception e) {
@@ -35,7 +30,7 @@ public class Main extends Application {
 //		} catch (NullPointerException e) {
 //			System.out.println("nie ma klientow");
 //		}
-	//
+//	//
 //		KlientZarejestrowany klient1 = new KlientZarejestrowany("Jan", "Kowalski", "0048123456789");
 //		KlientZarejestrowany klient2 = new KlientZarejestrowany("Basia", "Mazurek", "0048126789");
 ////				Przewodnik przewodnik1 = new Przewodnik("Adam", "Nowak", "0048987654321");
@@ -54,6 +49,10 @@ public class Main extends Application {
 //
 //		// zapis za pomoca serializacji
 ////
+//		klient1.getWycieczki().add(w1);
+//		klient1.getWycieczki().add(w2);
+//		klient2.getWycieczki().add(w1);
+//
 //		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
 //		Ekstensja.save(oos);
 //		oos.close();
