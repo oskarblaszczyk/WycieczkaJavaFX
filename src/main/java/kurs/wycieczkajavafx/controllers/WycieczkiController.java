@@ -20,10 +20,14 @@ public class WycieczkiController {
     public ComboBox rodzajWycieczki;
     public Label krajMiasto;
     public Label edytujEtykietaKrajMiasto;
-    public ComboBox edytujRodzaj;
+    public TextField edytujRodzaj;
     public Button dodajWycieczke;
     public ComboBox dodajPrzewodnik;
     public ComboBox edytujPrzewodnik;
+    public TextField edytujKrajMiasto;
+    public TextField edytujCena;
+    public TextField edytujMotyw;
+    public Slider edytujOcena;
     private MainController mainController;
     private WycieczkaKrajowa krajowa = null;
     private WycieczkaZagraniczna zagraniczna = null;
@@ -61,7 +65,7 @@ public class WycieczkiController {
         try {
             ObservableList<Pracownik> przewodnik = FXCollections.observableArrayList(Ekstensja.getEkstensja(Przewodnik.class));
             dodajPrzewodnik.setItems(przewodnik);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             dodajPrzewodnik.setPromptText("Brak przewodnikow");
         }
 
@@ -75,21 +79,6 @@ public class WycieczkiController {
         MultipleSelectionModel<Wycieczka> selected = listWycieczki.getSelectionModel();
         zaznaczona = selected.getSelectedItem();
 
-
-//        krajowa = selected.getSelectedItem();
-//        zagraniczna = selected.getSelectedItem();
-
-
-//        klientID.setText(String.valueOf(naznaczony.getId()));
-//        edytujImie.setText(naznaczony.getImie());
-//        edytujNazwisko.setText(naznaczony.getNazwisko());
-//        edytujTelefon.setText(naznaczony.getNumerTelefonu());
-//        StringBuilder sb = new StringBuilder();
-//        for (String s : naznaczony.getEmail()) {
-//            sb.append(s + "\n");
-//        }
-//        edytujMail.setText(sb.toString());
-//
         itemsW.clear();
         try {
             itemsW.addAll(krajowa.getKlienci());
@@ -99,26 +88,22 @@ public class WycieczkiController {
 
         }
 
-        ObservableList<String> rodzaje = FXCollections.observableArrayList(Arrays.asList("Krajowa", "Zagraniczna"));
-        edytujRodzaj.setItems(rodzaje);
-        if (selected.getSelectedItem().getClass() == WycieczkaKrajowa.class) {
-            edytujRodzaj.getSelectionModel().selectFirst();
-        } else {
-            edytujRodzaj.getSelectionModel().selectLast();
-        }
-
-
+        edytujCena.setText(String.valueOf(zaznaczona.getCena()));
+        edytujMotyw.setText(zaznaczona.getMotyw().toString());
+        edytujOcena.adjustValue(zaznaczona.getOcena());
         try {
             ObservableList<Pracownik> przewodnik = FXCollections.observableArrayList(Ekstensja.getEkstensja(Przewodnik.class));
             edytujPrzewodnik.setItems(przewodnik);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             edytujPrzewodnik.setPromptText("Brak przewodnikow");
         }
-        try {
-            edytujPrzewodnik.getSelectionModel().select(selected.getSelectedItem().getPrzewodnik());
-        }catch (NullPointerException e){
+
+        edytujPrzewodnik.getSelectionModel().select(selected.getSelectedItem().getPrzewodnik());
+
+        if (zaznaczona.getPrzewodnik() == null) {
             edytujPrzewodnik.setPromptText("Nie wybrano przewodnika");
         }
+
         System.out.println(selected.getSelectedItem().getPrzewodnik());
         System.out.println(selected.getSelectedItem().getClass());
         System.out.println(WycieczkaKrajowa.class);
@@ -138,11 +123,40 @@ public class WycieczkiController {
         oos.close();
     }
 
-    public void dodajWycieczke(ActionEvent actionEvent) {
+    public void dodajWycieczke(ActionEvent actionEvent) throws IOException {
+        if (rodzajWycieczki.getValue().toString().equals("Krajowa")) {
+            WycieczkaKrajowa wk = new WycieczkaKrajowa(Double.parseDouble(dodajCena.getText()), MotywWycieczki.valueOf(dodajMotyw.getValue().toString()), dodajOcene.getValue(), dodajKrajMiasto.getText());
+            items.add(wk);
+        } else {
+            WycieczkaZagraniczna wz = new WycieczkaZagraniczna(Double.parseDouble(dodajCena.getText()), MotywWycieczki.valueOf(dodajMotyw.getValue().toString()), dodajOcene.getValue(), dodajKrajMiasto.getText(), SrodekTransportu.SAMOLOT);
+            items.add(wz);
+        }
 
+        listWycieczki.refresh();
+        rodzajWycieczki.getSelectionModel().clearSelection();
+        dodajCena.clear();
+        dodajMotyw.getSelectionModel().clearSelection();
+        dodajOcene.adjustValue(2.5);
+        dodajPrzewodnik.getSelectionModel().clearSelection();
+        dodajKrajMiasto.clear();
+
+
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
+        Ekstensja.save(oos);
+        oos.close();
     }
 
-    public void zapiszEdycje(ActionEvent actionEvent) {
+    public void zapiszEdycje(ActionEvent actionEvent) throws IOException {
+        zaznaczona.setCena(Double.parseDouble(edytujCena.getText()));
+        zaznaczona.setOcena(edytujOcena.getValue());
+        zaznaczona.setPrzewodnik((Przewodnik) edytujPrzewodnik.getValue());
+
+
+        listWycieczki.refresh();
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("BazaDanych"));
+        Ekstensja.save(oos);
+        oos.close();
+
     }
 
     public void setMainController(MainController mainController) {
@@ -157,12 +171,4 @@ public class WycieczkiController {
         }
     }
 
-    public void edytujRodzaj(ActionEvent actionEvent) {
-        if (edytujRodzaj.getValue().toString().equals("Krajowa")) {
-            edytujEtykietaKrajMiasto.setText("Miasto");
-        } else {
-            edytujEtykietaKrajMiasto.setText("Kraj");
-        }
-
-    }
-    }
+}

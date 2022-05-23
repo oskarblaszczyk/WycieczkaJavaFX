@@ -27,6 +27,16 @@ public class MenuController {
 
     @FXML
     public void openSprzedaj(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/kurs/fxml/SprzedajScreen.fxml"));
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SprzedajController sprzedajController = loader.getController();
+        sprzedajController.setMainController(mainController);
+        mainController.setScreen(pane);
     }
 
     @FXML
