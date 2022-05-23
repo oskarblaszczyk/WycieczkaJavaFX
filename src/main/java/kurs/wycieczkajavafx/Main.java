@@ -62,7 +62,7 @@ public class Main extends Application {
 //		oos.close();
 //
 	}
-//test
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/kurs/fxml/MainScreen.fxml"));
