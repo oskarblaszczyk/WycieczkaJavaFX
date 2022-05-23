@@ -124,7 +124,7 @@ public class KlienciController {
         this.mainController = mainController;
     }
 
-
+//test
     public void zapiszEdycje(ActionEvent actionEvent) throws IOException {
         naznaczony.setImie(edytujImie.getText());
         naznaczony.setNazwisko(edytujNazwisko.getText());

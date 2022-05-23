@@ -51,3 +51,4 @@
       <TextField fx:id="najwiecejWydal" layoutX="618.0" layoutY="478.0" />
    </children>
 </Pane>
+//test
