@@ -164,7 +164,9 @@ public class WycieczkiController {
     }
 
     public void rodzajWycieczki(ActionEvent actionEvent) {
-        if (rodzajWycieczki.getValue().toString().equals("Krajowa")) {
+        if (rodzajWycieczki.getValue() == null) {
+            //todo
+        } else if (rodzajWycieczki.getValue().toString().equals("Krajowa")) {
             krajMiasto.setText("Miasto");
         } else {
             krajMiasto.setText("Kraj");
